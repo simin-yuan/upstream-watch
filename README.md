@@ -120,6 +120,16 @@ The strings live in five places: `maintainer_events`, `claimer_idle`, `others_ac
 - The claimer countdown assumes "days" means calendar days of silence, and uses the account's own last action. It does not know whether the claimer is on holiday.
 - Dedupe state is a single JSON file. Two runs at the same time on the same file will race; it is not built for that.
 
+## Deliberately public strings
+
+`tools/leak_scan.py` refuses to push when it finds a machine path, a credential, an e-mail
+address, a private-network address, or any term in your local `.leak_patterns`.
+
+Attribution is the exception. `.leak_allow` (gitignored) lists literal strings that are
+public on purpose — your name on a copyright line, the project's own URL. A deny-list hit is
+dropped only when the *same line* also contains one of those strings, so `Copyright (c) 2026
+Simin Yuan` passes while a bare handle or a private term on any other line still blocks it.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

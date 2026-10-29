@@ -7,6 +7,11 @@ Two layers:
      things only you would think to check: your own login, your internal project names,
      the repositories you watch private forks of.
 
+A third file, `.leak_allow` (also gitignored), lists literal strings that are public on
+purpose — an author's name on a copyright line, the project's own URL. A deny-list hit is
+dropped only when the same line contains one of those strings, so attribution passes while
+a stray handle or a private term on any other line still blocks.
+
 Exit code 1 means do not push.
 """
 from __future__ import annotations
@@ -27,7 +32,7 @@ GENERIC = {
 
 # Files that are allowed to mention the things above, because their job is to describe them.
 EXEMPT_SUFFIX = {".png", ".jpg", ".jpeg", ".gif", ".ico", ".woff", ".woff2", ".pdf", ".zip"}
-EXEMPT_NAMES = {"leak_scan.py", ".leak_patterns"}
+EXEMPT_NAMES = {"leak_scan.py", ".leak_patterns", ".leak_allow"}
 
 
 def tracked_files() -> list[Path]:
@@ -46,8 +51,23 @@ def local_terms() -> list[str]:
             if ln.strip() and not ln.lstrip().startswith("#")]
 
 
+def allow_phrases() -> list[str]:
+    """Literal strings that are deliberately public, e.g. the author's name on a license line.
+
+    A deny-list hit is suppressed only when the same line also contains one of these
+    phrases, matched case-sensitively. So `Copyright (c) 2026 Simin Yuan` passes while a
+    bare `simin` or a handle-like `simin-yuan` on any other line still blocks.
+    """
+    f = ROOT / ".leak_allow"
+    if not f.exists():
+        return []
+    return [ln.rstrip("\n") for ln in f.read_text(encoding="utf-8").splitlines()
+            if ln.strip() and not ln.lstrip().startswith("#")]
+
+
 def main() -> int:
     terms = local_terms()
+    allowed = allow_phrases()
     findings = []
     for p in tracked_files():
         if not p.exists() or p.suffix.lower() in EXEMPT_SUFFIX or p.name in EXEMPT_NAMES:
@@ -66,6 +86,11 @@ def main() -> int:
         for term in terms:
             for m in re.finditer(re.escape(term), text, re.I):
                 line = text.count("\n", 0, m.start()) + 1
+                lstart = text.rfind("\n", 0, m.start()) + 1
+                lend = text.find("\n", m.start())
+                linetext = text[lstart: lend if lend != -1 else len(text)]
+                if any(ph in linetext for ph in allowed):
+                    continue
                 findings.append((p.relative_to(ROOT).as_posix(), line, f"deny-list: {term}", m.group(0)))
 
     if not findings:
