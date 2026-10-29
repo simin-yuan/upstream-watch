@@ -119,3 +119,7 @@ The strings live in five places: `maintainer_events`, `claimer_idle`, `others_ac
 - No notification transport of its own: it prints. Whatever runs it decides where the text goes, which is what keeps it usable from cron, a systemd timer, or an agent.
 - The claimer countdown assumes "days" means calendar days of silence, and uses the account's own last action. It does not know whether the claimer is on holiday.
 - Dedupe state is a single JSON file. Two runs at the same time on the same file will race; it is not built for that.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
