@@ -1,0 +1,4 @@
+#!/bin/sh
+# Refuse to push anything that names a person, a machine, or a secret.
+# Install: cp tools/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+exec python "$(git rev-parse --show-toplevel)/tools/leak_scan.py"

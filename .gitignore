@@ -1,0 +1,5 @@
+config.json
+.leak_patterns
+state/
+__pycache__/
+*.pyc

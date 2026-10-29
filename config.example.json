@@ -1,0 +1,61 @@
+{
+  "_comment": [
+    "Copy this file to config.json and edit it. config.json is gitignored: it names the",
+    "repositories you are waiting on, which is nobody else's business.",
+    "",
+    "Then: python watch_upstream.py --config config.json",
+    "Verify the logic first with: python watch_upstream.py --self-test"
+  ],
+
+  "login": "your-github-login",
+
+  "token": {
+    "env": "GITHUB_TOKEN"
+  },
+
+  "state": "state/watch_targets.json",
+
+  "targets": [
+    {
+      "repo": "acme/widget",
+      "number": 1234,
+      "kind": "pr",
+      "line": "A",
+      "desc": "fix truncated tool-call args",
+      "triggers": {"state": true, "maintainer": true, "changes_requested": true}
+    },
+    {
+      "repo": "acme/widget",
+      "number": 1240,
+      "kind": "issue",
+      "line": "A",
+      "desc": "same bug, reported as an issue",
+      "triggers": {"state": true, "maintainer": false, "changes_requested": false}
+    },
+    {
+      "repo": "other-org/gadget",
+      "number": 77,
+      "kind": "pr",
+      "line": "B",
+      "desc": "waiting on a merge decision, so the close/merge signal is all I want",
+      "triggers": {"state": true, "maintainer": false, "changes_requested": false},
+      "on_closed_unmerged": "if this closes unmerged, the work becomes ours to redo"
+    },
+    {
+      "repo": "other-org/gadget",
+      "number": 88,
+      "kind": "issue",
+      "line": "C",
+      "desc": "someone else claimed this; my PR is already open",
+      "others_activity": true
+    },
+    {
+      "repo": "third-org/tool",
+      "number": 501,
+      "kind": "issue",
+      "line": "D",
+      "desc": "I am queued behind a claimer, so their silence is my entry signal",
+      "claimer": {"login": "the-claimer", "days": 3}
+    }
+  ]
+}
