@@ -39,7 +39,7 @@ Two rules hide inside that table:
 Requires Python 3.10+ (it uses `X | None` annotations). No packages to install.
 
 ```bash
-git clone <this repo> upstream-watch && cd upstream-watch
+git clone https://github.com/simin-yuan/upstream-watch.git && cd upstream-watch
 cp config.example.json config.json
 $EDITOR config.json                      # your login, your targets, your token path
 python watch_upstream.py --self-test     # 38 checks, no network
@@ -97,19 +97,9 @@ Deliberately not every minute: nobody merges your PR within one minute of it bei
 
 `--self-test` exits 0 when every rule holds, non-zero otherwise, and prints one line per rule. It needs no config, no token and no network: all payloads are synthetic, so it runs on a fresh clone and cannot leak anyone's submission history.
 
-## Licence: pick one
-
-Both are offered because they attract different contributors and both are honest for this code. The author's pick is **MIT**.
-
-**MIT** — if you want the widest possible reuse, including inside closed products, with the least friction. One paragraph, no patent language, nothing to read. Right for a single-file tool whose value is the ideas, not the code volume.
-
-**Apache-2.0** — if you want an explicit patent grant and a trademark clause. It is what most of the ecosystem's corporate contributors require before they will touch a repository, so it removes a permission step nobody wants to have. Heavier: NOTICE file obligations, and the licence text is long enough that people stop reading it.
-
-If this repository ever accepts contributions from companies, switch to Apache-2.0 before that happens, not after — relicensing needs consent from every past contributor.
-
 ## Translating the output
 
-The notification strings are in Chinese, which is what the original user wanted on their phone. They are the part most worth changing for your own use, and `--self-test` asserts on several of them, so change the strings **and** the matching assertions together or the suite will tell you — loudly, which is the point.
+The notification strings are in Chinese, because that is where this started. They are the part most worth changing for your own use, and `--self-test` asserts on several of them, so change the strings **and** the matching assertions together or the suite will tell you — loudly, which is the point.
 
 The strings live in five places: `maintainer_events`, `claimer_idle`, `others_activity`, `evaluate`, and `error_message`.
 
@@ -119,6 +109,7 @@ The strings live in five places: `maintainer_events`, `claimer_idle`, `others_ac
 - No notification transport of its own: it prints. Whatever runs it decides where the text goes, which is what keeps it usable from cron, a systemd timer, or an agent.
 - The claimer countdown assumes "days" means calendar days of silence, and uses the account's own last action. It does not know whether the claimer is on holiday.
 - Dedupe state is a single JSON file. Two runs at the same time on the same file will race; it is not built for that.
+- A personal tool, maintained on a best-effort basis; no response-time commitment.
 
 ## Deliberately public strings
 
@@ -132,4 +123,6 @@ Simin Yuan` passes while a bare handle or a private term on any other line still
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE) — one paragraph, no patent language, nothing to read. If this
+repository ever accepts contributions from companies, switch to Apache-2.0 *before* that happens
+rather than after: relicensing needs consent from every past contributor.
